@@ -93,7 +93,7 @@ void get_menuitems(void)
 			char menustr[STR_SIZE] = "";
 			if (fgets(menustr, STR_SIZE, menufile) == NULL)
 			{
-			    int readerror = ferror(menufile);
+				int readerror = ferror(menufile);
 				if (readerror != 0)
 				{
 					err("error reading menu file: %d", readerror);
