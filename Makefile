@@ -45,7 +45,7 @@ EXTRA_LIBS += `pkg-config --libs xft`
 
 CC = gcc
 ifndef CFLAGS
-CFLAGS = -g -O2 -Wall -W
+CFLAGS = -g -O2 -Wall -W -Werror
 endif
 
 BINDIR = $(DESTDIR)$(PREFIX)/bin

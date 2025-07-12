@@ -209,7 +209,7 @@ void redraw(Client *c)
 	{
 		XFillRectangle(dsply, c->frame, inactive_gc, 0, 0, c->width - ((BARHEIGHT() - DEF_BORDERWIDTH) * 3), BARHEIGHT() - DEF_BORDERWIDTH);
 	}
-	if (!c->trans && c->name != NULL)
+	if (!c->trans)
 	{
 #ifdef XFT
 		XftDrawStringUtf8(c->xftdraw, &xft_detail, xftfont, SPACE, SPACE + xftfont->ascent, (XftChar8 *)c->name, strlen(c->name));

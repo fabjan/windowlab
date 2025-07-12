@@ -91,7 +91,11 @@ void get_menuitems(void)
 		while ((!feof(menufile)) && (!ferror(menufile)) && (num_menuitems < MAX_MENUITEMS))
 		{
 			char menustr[STR_SIZE] = "";
-			fgets(menustr, STR_SIZE, menufile);
+			if (fgets(menustr, STR_SIZE, menufile) == NULL) // we already checked for EOF above
+			{
+				err("error reading menu file");
+				break;
+			}
 			if (strlen(menustr) != 0)
 			{
 				char *pmenustr = menustr;

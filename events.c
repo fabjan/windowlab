@@ -19,6 +19,7 @@
  */
 
 #include <X11/Xatom.h>
+#include <X11/XKBlib.h>
 #include "windowlab.h"
 
 static void handle_key_press(XKeyEvent *);
@@ -109,7 +110,7 @@ void do_event_loop(void)
 
 static void handle_key_press(XKeyEvent *e)
 {
-	KeySym key = XKeycodeToKeysym(dsply, e->keycode, 0);
+	KeySym key = XkbKeycodeToKeysym(dsply, e->keycode, 0, 0);
 	switch (key)
 	{
 		case KEY_CYCLEPREV:

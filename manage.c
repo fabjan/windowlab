@@ -582,7 +582,7 @@ void write_titletext(Client *c, Window bar_win)
 		return;
 	}
 #endif
-	if (!c->trans && c->name != NULL)
+	if (!c->trans)
 	{
 #ifdef XFT
 		(void) bar_win; // fixes a warning
