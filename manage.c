@@ -98,7 +98,7 @@ void toggle_fullscreen(Client *c)
 		{
 			xoffset = yoffset = 0;
 			maxwinwidth = DisplayWidth(dsply, screen);
-			maxwinheight = DisplayHeight(dsply, screen) - BARHEIGHT();
+			maxwinheight = DisplayHeight(dsply, screen);
 			if (fullscreen_client != NULL) // reset existing fullscreen window to original size
 			{
 				fullscreen_client->x = fs_prevdims.x;
@@ -106,7 +106,7 @@ void toggle_fullscreen(Client *c)
 				fullscreen_client->width = fs_prevdims.width;
 				fullscreen_client->height = fs_prevdims.height;
 				XMoveResizeWindow(dsply, fullscreen_client->frame, fullscreen_client->x, fullscreen_client->y - BARHEIGHT(), fullscreen_client->width, fullscreen_client->height + BARHEIGHT());
-				XMoveResizeWindow(dsply, fullscreen_client->window, 0, BARHEIGHT(), fullscreen_client->width, fullscreen_client->height);
+				XMoveResizeWindow(dsply, fullscreen_client->window, 0, 0, fullscreen_client->width, fullscreen_client->height);
 				send_config(fullscreen_client);
 			}
 			fs_prevdims.x = c->x;
@@ -114,7 +114,7 @@ void toggle_fullscreen(Client *c)
 			fs_prevdims.width = c->width;
 			fs_prevdims.height = c->height;
 			c->x = 0 - BORDERWIDTH(c);
-			c->y = BARHEIGHT() - BORDERWIDTH(c);
+			c->y = 0 - BORDERWIDTH(c);
 			c->width = maxwinwidth;
 			c->height = maxwinheight;
 			if (c->size->flags & PMaxSize || c->size->flags & PResizeInc)
