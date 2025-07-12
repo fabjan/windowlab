@@ -1,4 +1,17 @@
-# My fork of Windowlab
+# Fabian's WindowLab fork
+
+I'm chipping away at this the best stacking window manager ever invented.
+Standing on the shoulders of giants.
+
+Changelog:
+  - 2025-07-12: make fullscreen mode cover the whole screen
+
+I use Ubuntu and learned I needed to install the following packages to build WindowLab:
+`libx11-dev libxft-dev libxext-dev`
+
+Below is Adam's README, also see https://www.harmansky.xyz/work/windowlab/
+
+# \[Adam's] fork of Windowlab
 
 This fork of windowlab focuses on fixing things that have changed over the years, like the process of getting window titles and Xft fonts. Suggestions for more fixes are welcome.
 
