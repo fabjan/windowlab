@@ -94,6 +94,7 @@ void get_menuitems(void)
 			if (fgets(menustr, STR_SIZE, menufile) == NULL) // we already checked for EOF above
 			{
 				err("error reading menu file");
+				break;
 			}
 			if (strlen(menustr) != 0)
 			{
