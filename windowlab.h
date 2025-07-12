@@ -94,6 +94,7 @@ typedef struct PropMwmHints
 #define DEF_MENU "#ddd"
 #define DEF_SELECTED "#aad"
 #define DEF_EMPTY "#000"
+#define DEF_STATUS "#ddd"
 #define DEF_BORDERWIDTH 2
 #define ACTIVE_SHADOW 0x2000 // eg #fff becomes #ddd
 #define SPACE 3
@@ -245,14 +246,14 @@ extern XFontStruct *font;
 extern XftFont *xftfont;
 extern XftColor xft_detail;
 #endif
-extern GC border_gc, text_gc, active_gc, depressed_gc, inactive_gc, menu_gc, selected_gc, empty_gc;
-extern XColor border_col, text_col, active_col, depressed_col, inactive_col, menu_col, selected_col, empty_col;
+extern GC border_gc, text_gc, active_gc, depressed_gc, inactive_gc, menu_gc, selected_gc, empty_gc, status_gc;
+extern XColor border_col, text_col, active_col, depressed_col, inactive_col, menu_col, selected_col, empty_col, status_col;
 extern Cursor resize_curs;
 extern Atom wm_state, wm_change_state, wm_protos, wm_delete, wm_cmapwins, net_wm_name;
 #ifdef MWM_HINTS
 extern Atom mwm_hints;
 #endif
-extern char *opt_font, *opt_border, *opt_text, *opt_active, *opt_inactive, *opt_menu, *opt_selected, *opt_empty;
+extern char *opt_font, *opt_border, *opt_text, *opt_active, *opt_inactive, *opt_menu, *opt_selected, *opt_empty, *opt_status;
 #ifdef SHAPE
 extern int shape, shape_event;
 #endif

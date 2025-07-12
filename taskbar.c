@@ -321,7 +321,7 @@ void redraw_taskbar(void)
 		}
 		button_startx = (int)((i+1) * button_width);
 	}
-	XFillRectangle(dsply, taskbar, inactive_gc, button_startx, 0, DisplayWidth(dsply, screen) - button_startx, BARHEIGHT() - DEF_BORDERWIDTH);
+	XFillRectangle(dsply, taskbar, status_gc, button_startx, 0, DisplayWidth(dsply, screen) - button_startx, BARHEIGHT() - DEF_BORDERWIDTH);
 #ifdef XFT
 	XftDrawStringUtf8(tbxftdraw, &xft_detail, xftfont, button_startx + SPACE, SPACE + xftfont->ascent, (unsigned char *)statustext, strlen(statustext));
 #else

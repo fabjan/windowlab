@@ -32,8 +32,8 @@ XFontStruct *font = NULL;
 XftFont *xftfont = NULL;
 XftColor xft_detail;
 #endif
-GC string_gc, border_gc, text_gc, active_gc, depressed_gc, inactive_gc, menu_gc, selected_gc, empty_gc;
-XColor border_col, text_col, active_col, depressed_col, inactive_col, menu_col, selected_col, empty_col;
+GC string_gc, border_gc, text_gc, active_gc, depressed_gc, inactive_gc, menu_gc, selected_gc, empty_gc, status_gc;
+XColor border_col, text_col, active_col, depressed_col, inactive_col, menu_col, selected_col, empty_col, status_col;
 Cursor resize_curs;
 Atom wm_state, wm_change_state, wm_protos, wm_delete, wm_cmapwins, net_wm_name;
 #ifdef MWM_HINTS
@@ -52,6 +52,7 @@ char *opt_inactive = DEF_INACTIVE;
 char *opt_menu = DEF_MENU;
 char *opt_selected = DEF_SELECTED;
 char *opt_empty = DEF_EMPTY;
+char *opt_status = DEF_STATUS;
 char *opt_display = NULL;
 #ifdef SHAPE
 Bool shape;
@@ -84,6 +85,7 @@ int main(int argc, char **argv)
 		OPT_STR("-menu", opt_menu)
 		OPT_STR("-selected", opt_selected)
 		OPT_STR("-empty", opt_empty)
+		OPT_STR("-status", opt_status)
 		OPT_STR("-display", opt_display)
 		if (strcmp(argv[i], "-about") == 0)
 		{
@@ -91,7 +93,7 @@ int main(int argc, char **argv)
 			exit(0);
 		}
 		// shouldn't get here; must be a bad option
-		err("usage:\n  windowlab [options]\n\noptions are:\n  -font <font>\n  -border|-text|-active|-inactive|-menu|-selected|-empty <color>\n  -about\n  -display <display>");
+		err("usage:\n  windowlab [options]\n\noptions are:\n  -font <font>\n  -border|-text|-active|-inactive|-menu|-selected|-empty|-status <color>\n  -about\n  -display <display>");
 		return 2;
 	}
 
@@ -170,6 +172,7 @@ static void setup_display(void)
 	XAllocNamedColor(dsply, DefaultColormap(dsply, screen), opt_menu, &menu_col, &dummyc);
 	XAllocNamedColor(dsply, DefaultColormap(dsply, screen), opt_selected, &selected_col, &dummyc);
 	XAllocNamedColor(dsply, DefaultColormap(dsply, screen), opt_empty, &empty_col, &dummyc);
+	XAllocNamedColor(dsply, DefaultColormap(dsply, screen), opt_status, &status_col, &dummyc);
 
 	depressed_col.pixel = active_col.pixel;
 	depressed_col.red = active_col.red - ACTIVE_SHADOW;
@@ -258,6 +261,9 @@ static void setup_display(void)
 
 	gv.foreground = empty_col.pixel;
 	empty_gc = XCreateGC(dsply, root, GCFunction|GCForeground, &gv);
+
+	gv.foreground = status_col.pixel;
+	status_gc = XCreateGC(dsply, root, GCFunction|GCForeground, &gv);
 
 	sattr.event_mask = ChildMask|ColormapChangeMask|ButtonMask|PropertyChangeMask;
 	XChangeWindowAttributes(dsply, root, CWEventMask, &sattr);
