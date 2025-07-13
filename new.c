@@ -146,6 +146,7 @@ void make_new_client(Window w)
 	XSync(dsply, False);
 	XUngrabServer(dsply);
 
+	reorder_clients_by_x_position();
 	redraw_taskbar();
 }
 
