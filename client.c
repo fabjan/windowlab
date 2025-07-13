@@ -427,10 +427,16 @@ Bool reorder_clients_by_x_position()
 	}
 
 	Client **clients = malloc(sizeof(Client *) * client_count);
-	Client **clients_before = malloc(sizeof(Client *) * client_count);
-	if (clients == NULL || clients_before == NULL)
+	if (clients == NULL)
 	{
 		err("could not allocate to re-order clients, skipping");
+		return False;
+	}
+	Client **clients_before = malloc(sizeof(Client *) * client_count);
+	if (clients_before == NULL)
+	{
+		err("could not allocate to re-order clients, skipping");
+		free(clients);
 		return False;
 	}
 
