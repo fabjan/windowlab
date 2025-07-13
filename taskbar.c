@@ -301,31 +301,31 @@ void redraw_taskbar(void)
 	for (c = head_client, i = 0; c != NULL; c = c->next, i++)
 	{
 		button_iwidth = button_width;
-        XDrawLine(dsply, taskbar, border_gc, button_startx + button_iwidth - 1, 0, button_startx + button_iwidth - 1, BARHEIGHT() - DEF_BORDERWIDTH);
-		button_iwidth--; /* don't overdraw the line */
+		XFillRectangle(dsply, taskbar, border_gc, button_startx, 0, button_iwidth, BARHEIGHT());
 		if (c == focused_client)
 		{
-			XFillRectangle(dsply, taskbar, active_gc, button_startx, 0, button_iwidth, BARHEIGHT() - DEF_BORDERWIDTH);
+			XFillRectangle(dsply, taskbar, active_gc, button_startx + DEF_BORDERWIDTH, 0, button_iwidth, BARHEIGHT() - DEF_BORDERWIDTH);
 		}
 		else
 		{
-			XFillRectangle(dsply, taskbar, inactive_gc, button_startx, 0, button_iwidth, BARHEIGHT() - DEF_BORDERWIDTH);
+			XFillRectangle(dsply, taskbar, inactive_gc, button_startx + DEF_BORDERWIDTH, 0, button_iwidth, BARHEIGHT() - DEF_BORDERWIDTH);
 		}
 		if (!c->trans)
 		{
 #ifdef XFT
-			XftDrawStringUtf8(tbxftdraw, &xft_detail, xftfont, button_startx + SPACE, SPACE + xftfont->ascent, (unsigned char *)c->name, strlen(c->name));
+			XftDrawStringUtf8(tbxftdraw, &xft_detail, xftfont, button_startx + SPACE + DEF_BORDERWIDTH, SPACE + xftfont->ascent, (unsigned char *)c->name, strlen(c->name));
 #else
-			XDrawString(dsply, taskbar, text_gc, button_startx + SPACE, SPACE + font->ascent, c->name, strlen(c->name));
+			XDrawString(dsply, taskbar, text_gc, button_startx + SPACE + DEF_BORDERWIDTH, SPACE + font->ascent, c->name, strlen(c->name));
 #endif
 		}
 		button_startx = (int)((i+1) * button_width);
 	}
-	XFillRectangle(dsply, taskbar, status_gc, button_startx, 0, DisplayWidth(dsply, screen) - button_startx, BARHEIGHT() - DEF_BORDERWIDTH);
+	XFillRectangle(dsply, taskbar, border_gc, button_startx, 0, DisplayWidth(dsply, screen) - button_startx, BARHEIGHT());
+	XFillRectangle(dsply, taskbar, status_gc, button_startx + DEF_BORDERWIDTH, 0, DisplayWidth(dsply, screen) - button_startx, BARHEIGHT() - DEF_BORDERWIDTH);
 #ifdef XFT
-	XftDrawStringUtf8(tbxftdraw, &xft_detail, xftfont, button_startx + SPACE, SPACE + xftfont->ascent, (unsigned char *)statustext, strlen(statustext));
+	XftDrawStringUtf8(tbxftdraw, &xft_detail, xftfont, button_startx + SPACE + DEF_BORDERWIDTH, SPACE + xftfont->ascent, (unsigned char *)statustext, strlen(statustext));
 #else
-	XDrawString(dsply, taskbar, text_gc, button_startx + SPACE, SPACE + font->ascent, statustext, strlen(statustext));
+	XDrawString(dsply, taskbar, text_gc, button_startx + SPACE + DEF_BORDERWIDTH, SPACE + font->ascent, statustext, strlen(statustext));
 #endif
 }
 
