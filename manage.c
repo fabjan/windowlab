@@ -232,13 +232,15 @@ void move(Client *c)
 				send_config(c);
 				break;
 		}
+		if (reorder_clients_by_x_position())
+		{
+			redraw_taskbar();
+		}
 	}
 	while (ev.type != ButtonRelease);
 
 	ungrab();
 	XDestroyWindow(dsply, constraint_win);
-	reorder_clients_by_x_position();
-	redraw_taskbar();
 }
 
 void resize(Client *c, int x, int y)
