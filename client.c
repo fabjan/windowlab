@@ -411,7 +411,7 @@ int compare_client_x(const void* a, const void* b)
 	return (ca->x + ca->width/2) - (cb->x + cb->width/2);
 }
 
-void reorder_clients_by_x_position()
+Bool reorder_clients_by_x_position()
 {
 	int client_count = 0;
 	Client *c;
@@ -423,22 +423,34 @@ void reorder_clients_by_x_position()
 
 	if (client_count <= 1)
 	{
-		return;
+		return False;
 	}
 
 	Client **clients = malloc(sizeof(Client *) * client_count);
-	if (clients == NULL)
+	Client **clients_before = malloc(sizeof(Client *) * client_count);
+	if (clients == NULL || clients_before == NULL)
 	{
-		err("could not allocate array to re-order clients, skipping");
-		return;
+		err("could not allocate to re-order clients, skipping");
+		return False;
 	}
 
 	int i = 0;
 	for (c = head_client; c != NULL; c = c->next)
 	{
+		clients_before[i] = c;
 		clients[i++] = c;
 	}
 	qsort(clients, client_count, sizeof(Client *), compare_client_x);
+
+	Bool order_changed = False;
+	for (i = 0; i < client_count; i++)
+	{
+		if (clients[i] != clients_before[i])
+		{
+			order_changed = True;
+			break;
+		}
+	}
 
 	// insert Indy gif
 	head_client = clients[0];
@@ -449,4 +461,7 @@ void reorder_clients_by_x_position()
 	clients[client_count-1]->next = NULL;
 
 	free(clients);
+	free(clients_before);
+	
+	return order_changed;
 }

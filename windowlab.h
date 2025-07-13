@@ -279,7 +279,7 @@ extern void draw_hide_button(Client *, GC *, GC *);
 extern void draw_toggledepth_button(Client *, GC *, GC *);
 extern void draw_close_button(Client *, GC *, GC *);
 extern void update_title(Client *);
-extern void reorder_clients_by_x_position(void);
+extern Bool reorder_clients_by_x_position(void);
 
 // new.c
 extern void make_new_client(Window);
