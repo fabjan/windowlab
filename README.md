@@ -4,6 +4,8 @@ I'm chipping away at this the best stacking window manager ever invented.
 Standing on the shoulders of giants.
 
 Changelog:
+  - 2025-07-13: keep task bar ordered by client position
+  - 2025-07-12: separate status bar color from task bar 
   - 2025-07-12: make fullscreen mode cover the whole screen
 
 I use Ubuntu and learned I needed to install the following packages to build WindowLab:
