@@ -427,13 +427,17 @@ void reorder_clients_by_x_position()
 	}
 
 	Client **clients = malloc(sizeof(Client *) * client_count);
+	if (clients == NULL)
+	{
+		err("could not allocate array to re-order clients, skipping");
+		return;
+	}
 
 	int i = 0;
 	for (c = head_client; c != NULL; c = c->next)
 	{
 		clients[i++] = c;
 	}
-
 	qsort(clients, client_count, sizeof(Client *), compare_client_x);
 
 	// insert Indy gif
