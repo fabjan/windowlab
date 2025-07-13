@@ -402,3 +402,51 @@ update_title(Client *c) {
 	if (c->name[0] == '\0') /* hack to mark broken clients */
 		strcpy(c->name, "broken");
 }
+
+int compare_client_x(const void* a, const void* b)
+{
+	Client *ca = *(Client **)a;
+	Client *cb = *(Client **)b;
+
+	return (ca->x + ca->width/2) - (cb->x + cb->width/2);
+}
+
+void reorder_clients_by_x_position()
+{
+	int client_count = 0;
+	Client *c;
+
+	for (c = head_client; c != NULL; c = c->next)
+	{
+		client_count++;
+	}
+
+	if (client_count <= 1)
+	{
+		return;
+	}
+
+	Client **clients = malloc(sizeof(Client *) * client_count);
+	if (clients == NULL)
+	{
+		err("could not allocate array to re-order clients, skipping");
+		return;
+	}
+
+	int i = 0;
+	for (c = head_client; c != NULL; c = c->next)
+	{
+		clients[i++] = c;
+	}
+	qsort(clients, client_count, sizeof(Client *), compare_client_x);
+
+	// insert Indy gif
+	head_client = clients[0];
+	for (i = 0; i < client_count - 1; i++)
+	{
+		clients[i]->next = clients[i+1];
+	}
+	clients[client_count-1]->next = NULL;
+
+	free(clients);
+}

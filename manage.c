@@ -237,6 +237,8 @@ void move(Client *c)
 
 	ungrab();
 	XDestroyWindow(dsply, constraint_win);
+	reorder_clients_by_x_position();
+	redraw_taskbar();
 }
 
 void resize(Client *c, int x, int y)
