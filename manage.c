@@ -487,6 +487,10 @@ void resize(Client *c, int x, int y)
 	
 	XDestroyWindow(dsply, resizebar_win);
 	XDestroyWindow(dsply, resize_win);
+	if (reorder_clients_by_x_position())
+	{
+		redraw_taskbar();
+	}
 }
 
 static void limit_size(Client *c, Rect *newdims)
