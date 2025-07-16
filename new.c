@@ -23,7 +23,7 @@
 static void init_position(Client *);
 static void reparent(Client *);
 #ifdef MWM_HINTS
-static PropMwmHints *get_mwm_hints(Window);
+static Bool get_mwm_hints(Window, PropMwmHints *);
 #endif
 
 /* Set up a client structure for the new (not-yet-mapped) window. The
@@ -39,7 +39,7 @@ void make_new_client(Window w)
 	XWindowAttributes attr;
 	XWMHints *hints;
 #ifdef MWM_HINTS
-	PropMwmHints *mhints;
+	PropMwmHints mhints;
 #endif
 	long dummy;
 
@@ -83,14 +83,13 @@ void make_new_client(Window w)
 	c->has_title = 1;
 	c->has_border = 1;
 
-	if ((mhints = get_mwm_hints(c->window)))
+	if (get_mwm_hints(c->window, &mhints))
 	{
-		if (mhints->flags & MWM_HINTS_DECORATIONS && !(mhints->decorations & MWM_DECOR_ALL))
+		if (mhints.flags & MWM_HINTS_DECORATIONS && !(mhints.decorations & MWM_DECOR_ALL))
 		{
-			c->has_title = mhints->decorations & MWM_DECOR_TITLE;
-			c->has_border = mhints->decorations & MWM_DECOR_BORDER;
+			c->has_title = mhints.decorations & MWM_DECOR_TITLE;
+			c->has_border = mhints.decorations & MWM_DECOR_BORDER;
 		}
-		XFree(mhints);
 	}
 #endif
 
@@ -154,21 +153,43 @@ void make_new_client(Window w)
  * sends back the pointer to what was allocated. */
 
 #ifdef MWM_HINTS
-static PropMwmHints *get_mwm_hints(Window w)
+static Bool get_mwm_hints(Window w, PropMwmHints *hints)
 {
 	Atom real_type;
 	int real_format;
 	unsigned long items_read, items_left;
-	unsigned char *data;
-
-	if (XGetWindowProperty(dsply, w, mwm_hints, 0L, 20L, False, mwm_hints, &real_type, &real_format, &items_read, &items_left, &data) == Success && items_read >= PROP_MWM_HINTS_ELEMENTS)
+	// NOTE: See XGetWindowProperty(3)
+	// > If the returned format is 32, the property data will be stored as an array of longs (which in a 64-bit application will be
+	// > 64-bit values that are padded in the upper 4 bytes).
+	unsigned long *data = NULL;
+	
+	int success = XGetWindowProperty(dsply, w, mwm_hints, 0, PROP_MWM_HINTS_ELEMENTS, False, mwm_hints, &real_type, &real_format, &items_read, &items_left, (unsigned char **)&data);
+	if (success != Success)
 	{
-		return (PropMwmHints *)data;
+		err("cannot read hints property for window 0x%x", w);
+		return False;
 	}
-	else
+	if (real_type == None)
 	{
-		return NULL;
+		return False;
 	}
+	if (real_type != mwm_hints || real_format != 32)
+	{
+		err("bad hints property read for window 0x%x", w);
+		return False;
+	}
+	if (items_read < PROP_MWM_HINTS_ELEMENTS)
+	{
+		err("hints property too small for window 0x%x (misssing %d of %d elements)", w, (PROP_MWM_HINTS_ELEMENTS - items_read), PROP_MWM_HINTS_ELEMENTS);
+		return False;
+	}
+	
+	hints->flags = (CARD32)data[0];
+	hints->functions = (CARD32)data[1];
+	hints->decorations = (CARD32)data[2];
+	hints->inputMode = (INT32)data[3];
+	hints->status = (CARD32)data[4];
+	return True;
 }
 #endif
 
