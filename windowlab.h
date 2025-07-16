@@ -145,13 +145,6 @@ typedef struct PropMwmHints
 #define BORDERWIDTH(c) (DEF_BORDERWIDTH)
 #endif
 
-// title height accessor to handle hints/no hints
-#ifdef MWM_HINTS
-#define TITLEHEIGHT(c) ((c)->has_title ? BARHEIGHT() : 0)
-#else
-#define TITLEHEIGHT(c) (BARHEIGHT())
-#endif
-
 // bar height
 #ifdef XFT
 #define BARHEIGHT() (xftfont->ascent + xftfont->descent + 2*SPACE + 2)
