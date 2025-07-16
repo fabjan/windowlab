@@ -149,9 +149,6 @@ void make_new_client(Window w)
 	redraw_taskbar();
 }
 
-/* This one does *not* free the data coming back from Xlib; it just
- * sends back the pointer to what was allocated. */
-
 #ifdef MWM_HINTS
 static Bool get_mwm_hints(Window w, PropMwmHints *hints)
 {
@@ -189,6 +186,7 @@ static Bool get_mwm_hints(Window w, PropMwmHints *hints)
 	hints->decorations = (CARD32)data[2];
 	hints->inputMode = (INT32)data[3];
 	hints->status = (CARD32)data[4];
+	XFree(data);
 	return True;
 }
 #endif
