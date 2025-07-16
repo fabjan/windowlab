@@ -177,7 +177,7 @@ static Bool get_mwm_hints(Window w, PropMwmHints *hints)
 	}
 	if (items_read < PROP_MWM_HINTS_ELEMENTS)
 	{
-		err("hints property too small for window 0x%x (misssing %d of %d elements)", w, (PROP_MWM_HINTS_ELEMENTS - items_read), PROP_MWM_HINTS_ELEMENTS);
+		err("hints property too small for window 0x%x (missing %d of %d elements)", w, (PROP_MWM_HINTS_ELEMENTS - items_read), PROP_MWM_HINTS_ELEMENTS);
 		return False;
 	}
 	
