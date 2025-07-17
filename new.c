@@ -210,21 +210,20 @@ static void init_position(Client *c)
 {
 	int mousex, mousey;
 
-	// make sure it's big enough for the 3 buttons and a bit of bar
-	if (c->width < 4 * BARHEIGHT())
+	if (c->width < MINWINWIDTH)
 	{
-		c->width = 4 * BARHEIGHT();
+		c->width = MINWINWIDTH;
 	}
-	if (c->height < BARHEIGHT())
+	if (c->height < MINWINHEIGHT)
 	{
-		c->height = BARHEIGHT();
+		c->height = MINWINHEIGHT;
 	}
 
 	if (c->x == 0 && c->y == 0)
 	{
 		get_mouse_position(&mousex, &mousey);
 		c->x = mousex;
-		c->y = mousey + BARHEIGHT();
+		c->y = mousey + TITLEHEIGHT(c);
 		gravitate(c, REMOVE_GRAVITY);
 	}
 }
@@ -237,7 +236,7 @@ static void reparent(Client *c)
 	pattr.background_pixel = empty_col.pixel;
 	pattr.border_pixel = border_col.pixel;
 	pattr.event_mask = ChildMask|ButtonPressMask|ExposureMask|EnterWindowMask;
-	c->frame = XCreateWindow(dsply, root, c->x, c->y - BARHEIGHT(), c->width, c->height + BARHEIGHT(), BORDERWIDTH(c), DefaultDepth(dsply, screen), CopyFromParent, DefaultVisual(dsply, screen), CWOverrideRedirect|CWBackPixel|CWBorderPixel|CWEventMask, &pattr);
+	c->frame = XCreateWindow(dsply, root, c->x, c->y - TITLEHEIGHT(c), c->width, c->height + TITLEHEIGHT(c), BORDERWIDTH(c), DefaultDepth(dsply, screen), CopyFromParent, DefaultVisual(dsply, screen), CWOverrideRedirect|CWBackPixel|CWBorderPixel|CWEventMask, &pattr);
 
 #ifdef SHAPE
 	if (shape)
@@ -251,7 +250,7 @@ static void reparent(Client *c)
 	XSelectInput(dsply, c->window, ColormapChangeMask|PropertyChangeMask);
 	XSetWindowBorderWidth(dsply, c->window, 0);
 	XResizeWindow(dsply, c->window, c->width, c->height);
-	XReparentWindow(dsply, c->window, c->frame, 0, BARHEIGHT());
+	XReparentWindow(dsply, c->window, c->frame, 0, TITLEHEIGHT(c));
 
 	send_config(c);
 }

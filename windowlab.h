@@ -138,11 +138,12 @@ typedef struct PropMwmHints
 #define lower_win(c) ((void) XLowerWindow(dsply, (c)->frame))
 #define raise_win(c) ((void) XRaiseWindow(dsply, (c)->frame))
 
-// border width accessor to handle hints/no hints
 #ifdef MWM_HINTS
 #define BORDERWIDTH(c) ((c)->has_border ? DEF_BORDERWIDTH : 0)
+#define TITLEHEIGHT(c) ((c)->has_title ? BARHEIGHT() : 0)
 #else
 #define BORDERWIDTH(c) (DEF_BORDERWIDTH)
+#define TITLEHEIGHT(c) (BARHEIGHT())
 #endif
 
 // bar height
@@ -152,9 +153,10 @@ typedef struct PropMwmHints
 #define BARHEIGHT() (font->ascent + font->descent + 2*SPACE + 2)
 #endif
 
-// minimum window width and height, enough for 3 buttons and a bit of titlebar
+// minimum window width, enough for 3 buttons and a bit of titlebar
 #define MINWINWIDTH (BARHEIGHT() * 4)
-#define MINWINHEIGHT (BARHEIGHT() * 4)
+// minimum window height, enough room to grab for resizing
+#define MINWINHEIGHT (BARHEIGHT() * 1)
 
 // multipliers for calling gravitate
 #define APPLY_GRAVITY 1

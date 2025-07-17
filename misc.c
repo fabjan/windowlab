@@ -160,7 +160,7 @@ void get_mouse_position(int *x, int *y)
 	XQueryPointer(dsply, root, &mouse_root, &mouse_win, x, y, &win_x, &win_y, &mask);
 }
 
-/* If this is the fullscreen client we don't take BARHEIGHT() into account
+/* If this is the fullscreen client we don't take TITLEHEIGHT(c) into account
  * because the titlebar isn't being drawn on the window. */
 
 void fix_position(Client *c)
@@ -173,7 +173,7 @@ void fix_position(Client *c)
 	fprintf(stderr, "fix_position(): client was (%d, %d)-(%d, %d)\n", c->x, c->y, c->x + c->width, c->y + c->height);
 #endif
 	
-	titlebarheight = (fullscreen_client == c) ? 0 : BARHEIGHT();
+	titlebarheight = (fullscreen_client == c) ? 0 : TITLEHEIGHT(c);
 
 	if (c->width < MINWINWIDTH)
 	{
@@ -206,6 +206,7 @@ void fix_position(Client *c)
 	{
 		c->x = xmax - c->width;
 	}
+	// NOTE: we treat title-bar-less windows like they had a title bar here, so they don't go off screen
 	if (c->y + c->height + BARHEIGHT() >= ymax)
 	{
 		c->y = (ymax - c->height) - BARHEIGHT();
