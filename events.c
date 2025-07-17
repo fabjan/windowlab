@@ -391,7 +391,7 @@ static void handle_configure_request(XConfigureRequestEvent *e)
 		wc.y = c->y - TITLEHEIGHT(c);
 		wc.width = c->width;
 		wc.height = c->height + TITLEHEIGHT(c);
-		wc.border_width = DEF_BORDERWIDTH;
+		wc.border_width = BORDERWIDTH(c);
 		//wc.sibling = e->above;
 		//wc.stack_mode = e->detail;
 		XConfigureWindow(dsply, c->frame, e->value_mask, &wc);
@@ -404,7 +404,7 @@ static void handle_configure_request(XConfigureRequestEvent *e)
 		send_config(c);
 		// start setting up the next call
 		wc.x = 0;
-		wc.y = BARHEIGHT();
+		wc.y = TITLEHEIGHT(c);
 	}
 	else
 	{
