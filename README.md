@@ -3,13 +3,22 @@
 I'm chipping away at this the best stacking window manager ever invented.
 Standing on the shoulders of giants.
 
-Changelog:
-  - 2025-07-13: keep task bar ordered by client position
-  - 2025-07-12: separate status bar color from task bar 
-  - 2025-07-12: make fullscreen mode cover the whole screen
+Changes from Adam's fork (and original):
+ - scroll events work in GTK apps
+ - MWM hints are properly read in 64 bit builds
+ - the task buttons are separated by BORDERWIDTH
+ - the task bar is ordered by client position
+ - the status bar color can be separate from the task bar
+ - fullscreen mode covers the whole screen
 
-I use Ubuntu and learned I needed to install the following packages to build WindowLab:
-`libx11-dev libxft-dev libxext-dev`
+## Building
+
+I use Ubuntu, YMMV.
+
+```shell
+$ sudo apt install libx11-dev libxft-dev libxext-dev
+$ make
+```
 
 Below is Adam's README, also see https://www.harmansky.xyz/work/windowlab/
 
