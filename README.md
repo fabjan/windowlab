@@ -3,7 +3,9 @@
 I'm chipping away at this the best stacking window manager ever invented.
 Standing on the shoulders of giants.
 
-Changes from Adam's fork (and original):
+Changes from Adam's fork (and the original):
+ - windows can be moved using MOD + right mouse button
+ - windows with "no title" hints no longer get an empty title bar
  - scroll events work in GTK apps
  - MWM hints are properly read in 64 bit builds
  - the task buttons are separated by BORDERWIDTH
