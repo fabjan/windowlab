@@ -566,7 +566,7 @@ static void handle_enter_event(XCrossingEvent *e)
 		c = find_client(e->window, FRAME);
 		if (c != NULL)
 		{
-			XGrabButton(dsply, AnyButton, AnyModifier, c->frame, False, ButtonMask, GrabModeSync, GrabModeSync, None, None);
+			XGrabButton(dsply, 1, AnyModifier, c->frame, False, ButtonMask, GrabModeSync, GrabModeSync, None, None);
 		}
 	}
 }
