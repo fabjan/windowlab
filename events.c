@@ -141,7 +141,14 @@ static void handle_button_press(XButtonEvent *e)
 	{
 		if (focused_client != NULL && focused_client != fullscreen_client)
 		{
-			resize(focused_client, e->x_root, e->y_root);
+			if (e->button == Button3)
+			{
+				move(focused_client);
+			}
+			else
+			{
+				resize(focused_client, e->x_root, e->y_root);
+			}
 		}
 		else
 		{
@@ -567,6 +574,7 @@ static void handle_enter_event(XCrossingEvent *e)
 		if (c != NULL)
 		{
 			XGrabButton(dsply, 1, AnyModifier, c->frame, False, ButtonMask, GrabModeSync, GrabModeSync, None, None);
+			XGrabButton(dsply, 3, AnyModifier, c->frame, False, ButtonMask, GrabModeSync, GrabModeSync, None, None);
 		}
 	}
 }
