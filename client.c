@@ -136,7 +136,7 @@ void remove_client(Client *c, int mode)
 		XMapWindow(dsply, c->window);
 	}
 	gravitate(c, REMOVE_GRAVITY);
-	XReparentWindow(dsply, c->window, root, c->x, c->y);
+	XReparentWindow(dsply, c->window, root, c->x+BORDERWIDTH(c), c->y+BORDERWIDTH(c));
 #ifdef MWM_HINTS
 	if (c->has_border)
 	{
