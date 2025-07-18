@@ -77,6 +77,17 @@ void unhide(Client *c)
 	}
 }
 
+void reset_from_fullscreen(Client *c)
+{
+	c->x = fs_prevdims.x;
+	c->y = fs_prevdims.y;
+	c->width = fs_prevdims.width;
+	c->height = fs_prevdims.height;
+	XMoveResizeWindow(dsply, c->frame, c->x, c->y - TITLEHEIGHT(c), c->width, c->height + TITLEHEIGHT(c));
+	XMoveResizeWindow(dsply, c->window, 0, TITLEHEIGHT(c), c->width, c->height);
+	send_config(c);
+}
+
 void toggle_fullscreen(Client *c)
 {
 	int xoffset, yoffset, maxwinwidth, maxwinheight;
@@ -84,13 +95,7 @@ void toggle_fullscreen(Client *c)
 	{
 		if (c == fullscreen_client) // reset to original size
 		{
-			c->x = fs_prevdims.x;
-			c->y = fs_prevdims.y;
-			c->width = fs_prevdims.width;
-			c->height = fs_prevdims.height;
-			XMoveResizeWindow(dsply, c->frame, c->x, c->y - BARHEIGHT(), c->width, c->height + BARHEIGHT());
-			XMoveResizeWindow(dsply, c->window, 0, BARHEIGHT(), c->width, c->height);
-			send_config(c);
+			reset_from_fullscreen(c);
 			fullscreen_client = NULL;
 			showing_taskbar = 1;
 		}
@@ -101,14 +106,9 @@ void toggle_fullscreen(Client *c)
 			maxwinheight = DisplayHeight(dsply, screen);
 			if (fullscreen_client != NULL) // reset existing fullscreen window to original size
 			{
-				fullscreen_client->x = fs_prevdims.x;
-				fullscreen_client->y = fs_prevdims.y;
-				fullscreen_client->width = fs_prevdims.width;
-				fullscreen_client->height = fs_prevdims.height;
-				XMoveResizeWindow(dsply, fullscreen_client->frame, fullscreen_client->x, fullscreen_client->y - BARHEIGHT(), fullscreen_client->width, fullscreen_client->height + BARHEIGHT());
-				XMoveResizeWindow(dsply, fullscreen_client->window, 0, 0, fullscreen_client->width, fullscreen_client->height);
-				send_config(fullscreen_client);
+				reset_from_fullscreen(fullscreen_client);
 			}
+
 			fs_prevdims.x = c->x;
 			fs_prevdims.y = c->y;
 			fs_prevdims.width = c->width;
@@ -198,7 +198,8 @@ void move(Client *c)
 	bounddims.width = (dw - bounddims.x - (c->width - bounddims.x)) + 1;
 	bounddims.y = mousey - c->y;
 	bounddims.height = (dh - bounddims.y - (c->height - bounddims.y)) + 1;
-	bounddims.y += (BARHEIGHT() * 2) - BORDERWIDTH(c);
+	bounddims.y += BARHEIGHT() + TITLEHEIGHT(c) - BORDERWIDTH(c);
+	// NOTE: we treat title-bar-less windows like they had a title bar here, so they don't go off screen
 	bounddims.height += c->height - ((BARHEIGHT() * 2) - DEF_BORDERWIDTH);
 
 	constraint_win = XCreateWindow(dsply, root, bounddims.x, bounddims.y, bounddims.width, bounddims.height, 0, CopyFromParent, InputOnly, CopyFromParent, 0, &pattr);
@@ -228,7 +229,7 @@ void move(Client *c)
 			case MotionNotify:
 				c->x = old_cx + (ev.xmotion.x - mousex);
 				c->y = old_cy + (ev.xmotion.y - mousey);
-				XMoveWindow(dsply, c->frame, c->x, c->y - BARHEIGHT());
+				XMoveWindow(dsply, c->frame, c->x, c->y - TITLEHEIGHT(c));
 				send_config(c);
 				break;
 		}
@@ -249,10 +250,11 @@ void resize(Client *c, int x, int y)
 	Client *exposed_c;
 	Rect newdims, recalceddims, bounddims;
 	unsigned int dragging_outwards, dw, dh;
-	Window constraint_win, resize_win, resizebar_win;
+	int resizebar_height;
+	Window constraint_win, resize_win, resizebar_win = None;
 	XSetWindowAttributes pattr, resize_pattr, resizebar_pattr;
 
-	if (x > c->x + BORDERWIDTH(c) && x < (c->x + c->width) - BORDERWIDTH(c) && y > (c->y - BARHEIGHT()) + BORDERWIDTH(c) && y < (c->y + c->height) - BORDERWIDTH(c))
+	if (x > c->x + BORDERWIDTH(c) && x < (c->x + c->width) - BORDERWIDTH(c) && y > (c->y - TITLEHEIGHT(c)) + BORDERWIDTH(c) && y < (c->y + c->height) - BORDERWIDTH(c))
 	{
 		// inside the window, dragging outwards
 		dragging_outwards = 1;
@@ -281,9 +283,9 @@ void resize(Client *c, int x, int y)
 	}
 
 	newdims.x = c->x;
-	newdims.y = c->y - BARHEIGHT();
+	newdims.y = c->y - TITLEHEIGHT(c);
 	newdims.width = c->width;
-	newdims.height = c->height + BARHEIGHT();
+	newdims.height = c->height + TITLEHEIGHT(c);
 
 	copy_dims(&newdims, &recalceddims);
 
@@ -292,20 +294,23 @@ void resize(Client *c, int x, int y)
 	resize_pattr.background_pixel = menu_col.pixel;
 	resize_pattr.border_pixel = border_col.pixel;
 	resize_pattr.event_mask = ChildMask|ButtonPressMask|ExposureMask|EnterWindowMask;
-	resize_win = XCreateWindow(dsply, root, newdims.x, newdims.y, newdims.width, newdims.height, DEF_BORDERWIDTH, DefaultDepth(dsply, screen), CopyFromParent, DefaultVisual(dsply, screen), CWOverrideRedirect|CWBackPixel|CWBorderPixel|CWEventMask, &resize_pattr);
+	resize_win = XCreateWindow(dsply, root, newdims.x, newdims.y, newdims.width, newdims.height, BORDERWIDTH(c), DefaultDepth(dsply, screen), CopyFromParent, DefaultVisual(dsply, screen), CWOverrideRedirect|CWBackPixel|CWBorderPixel|CWEventMask, &resize_pattr);
 	XMapRaised(dsply, resize_win);
 
 	resizebar_pattr.override_redirect = True;
 	resizebar_pattr.background_pixel = active_col.pixel;
 	resizebar_pattr.border_pixel = border_col.pixel;
 	resizebar_pattr.event_mask = ChildMask|ButtonPressMask|ExposureMask|EnterWindowMask;
-	resizebar_win = XCreateWindow(dsply, resize_win, -DEF_BORDERWIDTH, -DEF_BORDERWIDTH, newdims.width, BARHEIGHT() - DEF_BORDERWIDTH, DEF_BORDERWIDTH, DefaultDepth(dsply, screen), CopyFromParent, DefaultVisual(dsply, screen), CWOverrideRedirect|CWBackPixel|CWBorderPixel|CWEventMask, &resizebar_pattr);
-	XMapRaised(dsply, resizebar_win);
-
+	resizebar_height = TITLEHEIGHT(c) - DEF_BORDERWIDTH;
+	if (0 < resizebar_height)
+	{
+		resizebar_win = XCreateWindow(dsply, resize_win, -DEF_BORDERWIDTH, -DEF_BORDERWIDTH, newdims.width, resizebar_height, DEF_BORDERWIDTH, DefaultDepth(dsply, screen), CopyFromParent, DefaultVisual(dsply, screen), CWOverrideRedirect|CWBackPixel|CWBorderPixel|CWEventMask, &resizebar_pattr);
+		XMapRaised(dsply, resizebar_win);
 #ifdef XFT
-	// temporarily swap drawables in order to draw on the resize window's XFT context
-	XftDrawChange(c->xftdraw, (Drawable) resizebar_win);
+		// temporarily swap drawables in order to draw on the resize window's XFT context
+		XftDrawChange(c->xftdraw, (Drawable) resizebar_win);
 #endif
+	}
 
 	// hide real window's frame
 	XUnmapWindow(dsply, c->frame);
@@ -316,7 +321,7 @@ void resize(Client *c, int x, int y)
 		switch (ev.type)
 		{
 			case Expose:
-				if (ev.xexpose.window == resizebar_win)
+				if (ev.xexpose.window == resizebar_win && resizebar_win != None)
 				{
 					write_titletext(c, resizebar_win);
 				}
@@ -424,7 +429,7 @@ void resize(Client *c, int x, int y)
 						if (leftedge_changed || rightedge_changed || topedge_changed || bottomedge_changed)
 						{
 							copy_dims(&newdims, &recalceddims);
-							recalceddims.height -= BARHEIGHT();
+							recalceddims.height -= TITLEHEIGHT(c);
 
 							if (get_incsize(c, (unsigned int *)&newwidth, (unsigned int *)&newheight, &recalceddims, PIXELS))
 							{
@@ -449,11 +454,14 @@ void resize(Client *c, int x, int y)
 								}
 							}
 
-							recalceddims.height += BARHEIGHT();
+							recalceddims.height += TITLEHEIGHT(c);
 							limit_size(c, &recalceddims);
 
 							XMoveResizeWindow(dsply, resize_win, recalceddims.x, recalceddims.y, recalceddims.width, recalceddims.height);
-							XResizeWindow(dsply, resizebar_win, recalceddims.width, BARHEIGHT() - DEF_BORDERWIDTH);
+							if (resizebar_win != None)
+							{
+								XResizeWindow(dsply, resizebar_win, recalceddims.width, resizebar_height);
+							}
 						}
 					}
 				}
@@ -465,11 +473,11 @@ void resize(Client *c, int x, int y)
 	XUngrabServer(dsply);
 	ungrab();
 	c->x = recalceddims.x;
-	c->y = recalceddims.y + BARHEIGHT();
+	c->y = recalceddims.y + TITLEHEIGHT(c);
 	c->width = recalceddims.width;
-	c->height = recalceddims.height - BARHEIGHT();
+	c->height = recalceddims.height - TITLEHEIGHT(c);
 
-	XMoveResizeWindow(dsply, c->frame, c->x, c->y - BARHEIGHT(), c->width, c->height + BARHEIGHT());
+	XMoveResizeWindow(dsply, c->frame, c->x, c->y - TITLEHEIGHT(c), c->width, c->height + TITLEHEIGHT(c));
 	XResizeWindow(dsply, c->window, c->width, c->height);
 
 	// unhide real window's frame
@@ -485,7 +493,10 @@ void resize(Client *c, int x, int y)
 	XftDrawChange(c->xftdraw, (Drawable) c->frame);
 #endif
 	
-	XDestroyWindow(dsply, resizebar_win);
+	if (resizebar_win != None)
+	{
+		XDestroyWindow(dsply, resizebar_win);
+	}
 	XDestroyWindow(dsply, resize_win);
 	if (reorder_clients_by_x_position())
 	{

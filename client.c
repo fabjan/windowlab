@@ -249,10 +249,10 @@ void gravitate(Client *c, int multiplier)
 		case NorthWestGravity:
 		case NorthEastGravity:
 		case NorthGravity:
-			dy = BARHEIGHT();
+			dy = TITLEHEIGHT(c);
 			break;
 		case CenterGravity:
-			dy = BARHEIGHT()/2;
+			dy = TITLEHEIGHT(c)/2;
 			break;
 	}
 

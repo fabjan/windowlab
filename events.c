@@ -141,7 +141,14 @@ static void handle_button_press(XButtonEvent *e)
 	{
 		if (focused_client != NULL && focused_client != fullscreen_client)
 		{
-			resize(focused_client, e->x_root, e->y_root);
+			if (e->button == Button3)
+			{
+				move(focused_client);
+			}
+			else
+			{
+				resize(focused_client, e->x_root, e->y_root);
+			}
 		}
 		else
 		{
@@ -190,7 +197,7 @@ static void handle_button_press(XButtonEvent *e)
 			{
 				// click-to-focus
 				check_focus(c);
-				if (e->y < BARHEIGHT() && c != fullscreen_client)
+				if (e->y < TITLEHEIGHT(c) && c != fullscreen_client)
 				{
 					handle_windowbar_click(e, c);
 				}
@@ -229,10 +236,10 @@ static void handle_windowbar_click(XButtonEvent *e, Client *c)
 		{
 			XMaskEvent(dsply, MouseMask, &ev);
 			in_box_up = box_clicked(c, ev.xbutton.x - (c->x + DEF_BORDERWIDTH));
-			win_ypos = (ev.xbutton.y - c->y) + BARHEIGHT();
+			win_ypos = (ev.xbutton.y - c->y) + TITLEHEIGHT(c);
 			if (ev.type == MotionNotify)
 			{
-				if ((win_ypos <= BARHEIGHT()) && (win_ypos >= DEF_BORDERWIDTH) && (in_box_up == in_box_down))
+				if ((win_ypos <= TITLEHEIGHT(c)) && (win_ypos >= DEF_BORDERWIDTH) && (in_box_up == in_box_down))
 				{
 					in_box = 1;
 					draw_button(c, &text_gc, &depressed_gc, in_box_down);
@@ -381,10 +388,10 @@ static void handle_configure_request(XConfigureRequestEvent *e)
 		gravitate(c, APPLY_GRAVITY);
 		// configure the frame
 		wc.x = c->x;
-		wc.y = c->y - BARHEIGHT();
+		wc.y = c->y - TITLEHEIGHT(c);
 		wc.width = c->width;
-		wc.height = c->height + BARHEIGHT();
-		wc.border_width = DEF_BORDERWIDTH;
+		wc.height = c->height + TITLEHEIGHT(c);
+		wc.border_width = BORDERWIDTH(c);
 		//wc.sibling = e->above;
 		//wc.stack_mode = e->detail;
 		XConfigureWindow(dsply, c->frame, e->value_mask, &wc);
@@ -397,7 +404,7 @@ static void handle_configure_request(XConfigureRequestEvent *e)
 		send_config(c);
 		// start setting up the next call
 		wc.x = 0;
-		wc.y = BARHEIGHT();
+		wc.y = TITLEHEIGHT(c);
 	}
 	else
 	{
@@ -567,6 +574,7 @@ static void handle_enter_event(XCrossingEvent *e)
 		if (c != NULL)
 		{
 			XGrabButton(dsply, 1, AnyModifier, c->frame, False, ButtonMask, GrabModeSync, GrabModeSync, None, None);
+			XGrabButton(dsply, 3, AnyModifier, c->frame, False, ButtonMask, GrabModeSync, GrabModeSync, None, None);
 		}
 	}
 }
