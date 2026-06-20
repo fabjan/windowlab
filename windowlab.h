@@ -95,19 +95,19 @@ typedef struct PropMwmHints
 #define DEF_SELECTED "#aad"
 #define DEF_EMPTY "#000"
 #define DEF_STATUS "#ddd"
-#define DEF_BORDERWIDTH 2
+#define DEF_BORDERWIDTH 3
 #define ACTIVE_SHADOW 0x2000 // eg #fff becomes #ddd
 #define SPACE 3
 
 // change MODIFIER to None to remove the need to hold down a modifier key
 // the Windows key should be Mod4Mask and the Alt key is Mod1Mask
-#define MODIFIER Mod4Mask
+#define MODIFIER Mod1Mask
 
 // keys may be used by other apps, so change them here
 #define KEY_CYCLEPREV XK_Tab
 #define KEY_CYCLENEXT XK_q
-#define KEY_FULLSCREEN XK_F11
-#define KEY_TOGGLEZ XK_F12
+#define KEY_FULLSCREEN XK_Return
+#define KEY_TOGGLEZ XK_BackSpace
 
 // max time between clicks in double click
 #define DEF_DBLCLKTIME 400

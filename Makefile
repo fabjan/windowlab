@@ -30,7 +30,7 @@ endif
 DEFINES += -DDEF_MENURC="\"$(MENURC)\""
 
 # Uncomment to add MWM hints support
-#DEFINES += -DMWM_HINTS
+DEFINES += -DMWM_HINTS
 
 # Uncomment to add freetype support (requires XFree86 4.0.2 or later)
 # This needs -lXext above, even if you have disabled shape support
